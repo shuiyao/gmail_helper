@@ -149,7 +149,10 @@ class Session():
             labelIds=labelIds,
             maxResults=maxResults).execute()
         nextPageToken = mails.get('nextPageToken')
-        self.mails = pd.DataFrame(mails['messages'])
+        try:
+            self.mails = pd.DataFrame(mails['messages'])
+        except:
+            print("No message with label: ", labelIds)
 
         # keys: 'messages', 'resultSizeEstimate'
         # return mails
@@ -368,7 +371,7 @@ class Session():
             
         # use pd.read_json(file, orient='index')
 
-__mode__ = '__example__'
+__mode__ = '__load__'
     
 if __mode__ == '__example__':
     if 'sess' not in locals():
@@ -381,12 +384,21 @@ if __mode__ == '__example__':
     mail = sess.get('me', 3)
     sess.read(4)
 
+UserLabeled = [
+    'Label_1', 'Label_2', 'Label_3', 'Label_4', 'Label_5',
+    'Label_6', 'Label_7', 'Label_8', 'Label_9', 'Label_10',
+    'Label_11', 'Label_12', 'Label_13', 'Label_14', 'Label_5',    
+    'Label_16', 'Label_17', 'Label_18', 'Label_19', 'Label_20'
+]
+    
 if __mode__ == '__load__':
     if 'sess' not in locals():
         sess = Session()
     sess = Session()
     sess.get_labels()
-    sess.get_mails('me', 'INBOX', 6000)
-    mail = sess.dump(basename='inbox', textbody=True)
+    # sess.get_mails('me', 'INBOX', 6000)
+    for i in range(1, 21):
+        sess.get_mails('me', UserLabeled[i], 1000)
+        mail = sess.dump(basename='labeled.'+str(i), textbody=True)
     
 print("DONE.")
